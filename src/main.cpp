@@ -17,14 +17,33 @@ int targetOffsetY = 0;
 
 int centered_x = 34;
 int centered_y = 20;
-int blinkInterval = random(2500,4000);
+unsigned int blinkInterval = random(2500,4000);/*it is unsigned so that the error disapears*/
 
 void setup() {
+  // Blink LED to show Arduino is alive
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH); // LED ON
+  delay(500);
+  digitalWrite(13, LOW);  // LED OFF
+
+  // Kick I2C lines to wake up stubborn OLED
+  pinMode(A4, OUTPUT); // SDA
+  pinMode(A5, OUTPUT); // SCL
+  digitalWrite(A4, HIGH);
+  digitalWrite(A5, HIGH);
+  delay(10);
+
+  Wire.begin();
+  delay(200); // Let devices settle
+
   Serial.begin(9600);
+  delay(100);
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.display();
 }
+
 /*drawEyes will draw the eyes on the given x and y position*/
 void drawEyes(int x, int y) {
   display.clearDisplay();
@@ -80,6 +99,5 @@ void loop() {
     lastBlinkTime = millis();
     getRandomBlink(centered_x,centered_y);
   }
-
   delay(30);
 }
